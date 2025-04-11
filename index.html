@@ -157,8 +157,10 @@
   }
 
   function updateTimer(min, sec) {
-    document.getElementById('timer').textContent = ${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')};
-  }function changeTheme(theme) {
+    document.getElementById('timer').textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+  }
+
+  function changeTheme(theme) {
     const video = document.getElementById("background-video");
     const sources = {
       galaxy: "https://cdn.pixabay.com/video/2016/03/21/551-160761405_large.mp4",
@@ -177,7 +179,7 @@
     const ytPlayer = document.getElementById("ytPlayer");
     const videoId = url.split("v=")[1]?.split("&")[0];
     if (videoId) {
-      ytPlayer.innerHTML = <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay"></iframe>;
+      ytPlayer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay"></iframe>`;
     } else {
       ytPlayer.innerHTML = "Invalid URL";
     }
