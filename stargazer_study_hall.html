@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stargazer's Study Hall</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        video.bg-video {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .container {
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        h1 {
+            font-size: 3em;
+            color: navy;
+        }
+        #timer {
+            font-size: 8em;
+            margin: 40px 0;
+        }
+        select, input[type='number'], input[type='file'], input[type='text'], button {
+            padding: 10px;
+            font-size: 1em;
+            margin: 10px;
+        }
+        #quote-box {
+            margin: 20px auto;
+            font-size: 1.2em;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop class="bg-video" id="bgVideo">
+        <source src="https://cdn.coverr.co/videos/coverr-galaxy-constellation-9345/1080p.mp4" type="video/mp4">
+    </video>
+
+    <div class="container">
+        <h1>STARGAZER'S STUDY HALL</h1>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Galaxy_icon.svg/2048px-Galaxy_icon.svg.png" alt="Galaxy Logo" width="100">
+        
+        <div id="quote-box">Stay focused. Stay curious. You're doing great!</div>
+
+        <div>
+            Focus Time (min): <input type="number" id="focus" value="25">
+            Break Time (min): <input type="number" id="break" value="5">
+        </div>
+
+        <div>
+            Theme:
+            <select id="themeSelector">
+                <option value="galaxy">Galaxy</option>
+                <option value="anime">Anime</option>
+                <option value="scifi">Sci-Fi</option>
+                <option value="mountains">Mountains</option>
+                <option value="library">Library</option>
+            </select>
+        </div>
+
+        <div id="timer">25:00</div>
+        <button onclick="startTimer()">Start Pomodoro</button>
+
+        <div>
+            <h3>Listen to Music</h3>
+            YouTube URL: <input type="text" id="ytUrl" placeholder="Enter YouTube URL">
+            <button onclick="playYouTube()">Play</button><br>
+            Or Upload MP3: <input type="file" accept="audio/*" onchange="playMusicFile(this)">
+            <audio controls id="audioPlayer"></audio>
+        </div>
+    </div>
+
+    <audio id="alarm" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+    <script>
+        const themes = {
+            galaxy: "https://cdn.coverr.co/videos/coverr-galaxy-constellation-9345/1080p.mp4",
+            anime: "https://cdn.coverr.co/videos/coverr-girl-with-red-scarf-walking-3110/1080p.mp4",
+            scifi: "https://cdn.coverr.co/videos/coverr-spacey-visualization-6803/1080p.mp4",
+            mountains: "https://cdn.coverr.co/videos/coverr-mountain-sunrise-6544/1080p.mp4",
+            library: "https://cdn.coverr.co/videos/coverr-library-in-sunlight-1934/1080p.mp4"
+        };
+
+        const quotes = [
+            "Discipline is the bridge between goals and accomplishment. – Jim Rohn",
+            "Success usually comes to those who are too busy to be looking for it.",
+            "Push yourself, because no one else is going to do it for you.",
+            "Great things never come from comfort zones.",
+            "Don't watch the clock; do what it does. Keep going.",
+            "Focus on being productive instead of busy.",
+            "You don’t have to be extreme, just consistent."
+        ];
+
+        let quoteIndex = 0;
+        setInterval(() => {
+            document.getElementById("quote-box").innerText = quotes[quoteIndex % quotes.length];
+            quoteIndex++;
+        }, 300000); // every 5 mins
+
+        document.getElementById("themeSelector").addEventListener("change", function() {
+            const video = document.getElementById("bgVideo");
+            video.src = themes[this.value];
+            video.load();
+            video.play();
+        });
+
+        function startTimer() {
+            let focus = parseInt(document.getElementById("focus").value) * 60;
+            let breakTime = parseInt(document.getElementById("break").value) * 60;
+            let timerEl = document.getElementById("timer");
+
+            let interval = setInterval(() => {
+                if (focus > 0) {
+                    let min = Math.floor(focus / 60);
+                    let sec = focus % 60;
+                    timerEl.innerText = `${min}:${sec.toString().padStart(2, "0")}`;
+                    focus--;
+                } else {
+                    clearInterval(interval);
+                    document.getElementById("alarm").play();
+                    alert("Congrats! You did it! Keep the momentum going!");
+                }
+            }, 1000);
+        }
+
+        function playMusicFile(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const audio = document.getElementById("audioPlayer");
+                audio.src = e.target.result;
+                audio.play();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function playYouTube() {
+            let url = document.getElementById("ytUrl").value;
+            if (url) {
+                let videoId = url.split("v=")[1];
+                let ampersandPosition = videoId.indexOf("&");
+                if (ampersandPosition !== -1) videoId = videoId.substring(0, ampersandPosition);
+                window.open("https://www.youtube.com/embed/" + videoId + "?autoplay=1", '_blank');
+            }
+        }
+    </script>
+</body>
+</html>
