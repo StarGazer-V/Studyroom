@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STARGAZER's STUDY HALL</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      overflow: hidden;
+      background-color: black;
+    }
+    .background-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+    }
+    .container {
+      text-align: center;
+      padding: 20px;
+      background-color: rgba(0,0,0,0.6);
+      height: 100%;
+      overflow-y: auto;
+    }
+    h1 {
+      color: navy;
+      font-size: 3rem;
+    }
+    .logo {
+      width: 80px;
+    }
+    .timer {
+      font-size: 5rem;
+      margin: 30px 0;
+    }
+    input, select, button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 1rem;
+    }
+    .quote {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop class="background-video" id="bgVideo">
+    <source src="https://www.videvo.net/videvo_files/converted/2015_08/preview/Space_Background_loop.mp443738.webm" type="video/webm">
+  </video>
+  <div class="container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/NGC_4414_%28NASA-med%29.jpg" class="logo" alt="Galaxy Logo">
+    <h1>STARGAZER's STUDY HALL</h1>
+    <div class="quote" id="quoteBox">“Push yourself, because no one else is going to do it for you.”</div>
+    <div>
+      <label>Study Time (minutes): <input type="number" id="studyTime" value="25" /></label>
+      <label>Break Time (minutes): <input type="number" id="breakTime" value="5" /></label>
+    </div>
+    <div>
+      <select id="themeSelect">
+        <option value="galaxy">Galaxy</option>
+        <option value="nature">Nature</option>
+        <option value="library">Library</option>
+        <option value="beach">Beach</option>
+        <option value="anime">Anime</option>
+      </select>
+      <button onclick="changeTheme()">Change Theme</button>
+    </div>
+    <div class="timer" id="timer">25:00</div>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="resetTimer()">Reset</button>
+    <div>
+      <input type="file" id="audioFile" accept="audio/*" onchange="playAudioFile()" />
+      <input type="text" id="youtubeLink" placeholder="YouTube Music Link" />
+      <button onclick="openYouTube()">Play YouTube</button>
+    </div>
+  </div>
+  <audio id="alarmSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+  <audio id="musicPlayer" controls style="display:none;"></audio>
+  <script>
+    let interval;
+    let isRunning = false;
+    let totalTime = 25 * 60;
+    let quotes = [
+      "Push yourself, because no one else is going to do it for you.",
+      "Success doesn’t just find you. You have to go out and get it.",
+      "Great things never come from comfort zones.",
+      "Dream it. Wish it. Do it.",
+      "Stay focused and never give up.",
+      "Wake up with determination. Go to bed with satisfaction.",
+      "Little things make big days.",
+      "Don’t stop when you’re tired. Stop when you’re done.",
+      "Do something today that your future self will thank you for."
+    ];
+    function updateTimerDisplay() {
+      let minutes = Math.floor(totalTime / 60);
+      let seconds = totalTime % 60;
+      document.getElementById("timer").textContent =
+        `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    }
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      interval = setInterval(() => {
+        if (totalTime <= 0) {
+          clearInterval(interval);
+          document.getElementById("alarmSound").play();
+          alert("Congrats! You did it! Stay Awesome!");
+          isRunning = false;
+        } else {
+          totalTime--;
+          updateTimerDisplay();
+        }
+      }, 1000);
+    }
+    function resetTimer() {
+      clearInterval(interval);
+      isRunning = false;
+      let studyMinutes = parseInt(document.getElementById("studyTime").value);
+      totalTime = studyMinutes * 60;
+      updateTimerDisplay();
+    }
+    function changeTheme() {
+      const theme = document.getElementById("themeSelect").value;
+      const video = document.getElementById("bgVideo");
+      let source = video.querySelector("source");
+      let srcUrl = "";
+      switch (theme) {
+        case "galaxy":
+          srcUrl = "https://www.videvo.net/videvo_files/converted/2015_08/preview/Space_Background_loop.mp443738.webm";
+          break;
+        case "nature":
+          srcUrl = "https://www.videvo.net/videvo_files/converted/2016_07/preview/Clouds_Timelapse2_2_Videvo.mov92585.webm";
+          break;
+        case "library":
+          srcUrl = "https://www.videvo.net/videvo_files/converted/2017_08/preview/Library_Reading_Silence.mp432654.webm";
+          break;
+        case "beach":
+          srcUrl = "https://www.videvo.net/videvo_files/converted/2016_11/preview/Sea_Waves_Sunset_Videvo.mp491832.webm";
+          break;
+        case "anime":
+          srcUrl = "https://cdn.pixabay.com/vimeo/380095159/anime-22994.mp4?width=1280&hash=4b0a394293fc0f28be1f775a6bbfd313379bba52";
+          break;
+      }
+      source.src = srcUrl;
+      video.load();
+      video.play();
+    }
+    function playAudioFile() {
+      const player = document.getElementById("musicPlayer");
+      const file = document.getElementById("audioFile").files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        player.src = url;
+        player.style.display = "block";
+        player.play();
+      }
+    }
+    function openYouTube() {
+      const url = document.getElementById("youtubeLink").value;
+      if (url) window.open(url, "_blank");
+    }
+    // Rotate quotes every 5 minutes
+    setInterval(() => {
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById("quoteBox").textContent = `“${randomQuote}”`;
+    }, 300000);
+    resetTimer();
+  </script>
+</body>
+</html>
