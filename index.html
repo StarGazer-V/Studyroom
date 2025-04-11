@@ -1,4 +1,164 @@
-function changeTheme(theme) {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stargazer's Study Hall</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      text-align: center;
+    }
+
+    #background-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+      object-fit: cover;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    h1 {
+      color: navy;
+      font-size: 3rem;
+    }
+
+    #timer {
+      font-size: 7rem;
+      margin: 30px 0;
+    }
+
+    input, select, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      border: none;
+    }
+
+    #quote {
+      margin: 20px;
+      font-style: italic;
+      font-size: 1.5rem;
+    }
+
+    iframe {
+      width: 300px;
+      height: 150px;
+      border: none;
+      margin-top: 20px;
+    }
+
+    audio {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<video autoplay muted loop id="background-video">
+  <source src="https://cdn.pixabay.com/video/2016/03/21/551-160761405_large.mp4" type="video/mp4">
+</video>
+
+<div class="container">
+  <h1>STARGAZER'S STUDY HALL</h1>
+  <div id="quote">“Stay focused and never give up.”</div>
+
+  <label>Set Study Time (minutes):</label>
+  <input type="number" id="studyTime" value="25" />
+
+  <label>Set Break Time (minutes):</label>
+  <input type="number" id="breakTime" value="5" />
+  <br>
+
+  <button onclick="startTimer()">Start</button>
+
+  <div id="timer">25:00</div>
+
+  <label>Choose Theme:</label>
+  <select onchange="changeTheme(this.value)">
+    <option value="galaxy">Galaxy</option>
+    <option value="anime">Anime</option>
+    <option value="nature">Nature</option>
+    <option value="scifi">Sci-Fi</option>
+    <option value="library">Library</option>
+  </select>
+
+  <div>
+    <h3>Play Music</h3>
+    <input type="text" id="youtubeUrl" placeholder="Paste YouTube URL" />
+    <button onclick="playYouTube()">Play</button>
+    <br><br>
+    <label>Or Upload MP3: </label>
+    <input type="file" accept="audio/*" onchange="playLocalAudio(this)" />
+    <audio id="localAudio" controls></audio>
+    <br><br>
+    <div id="ytPlayer"></div>
+  </div>
+</div>
+
+<script>
+  let timer;
+  let isStudy = true;
+  let quoteIndex = 0;
+  const quotes = [
+    "Push yourself, because no one else is going to do it for you.",
+    "You are capable of amazing things.",
+    "Small steps every day lead to big results.",
+    "Your only limit is your mind.",
+    "Don’t stop until you’re proud.",
+    "Success is what comes after you stop making excuses.",
+    "You were born to do this!"
+  ];
+
+  function startTimer() {
+    clearInterval(timer);
+    let minutes = parseInt(document.getElementById('studyTime').value);
+    let seconds = 0;
+    updateTimer(minutes, seconds);
+
+    timer = setInterval(() => {
+      if (seconds === 0) {
+        if (minutes === 0) {
+          clearInterval(timer);
+          new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play();
+          alert("Congrats! You did it!\n“Discipline is the bridge between goals and accomplishment.”");
+          isStudy = !isStudy;
+          if (isStudy) startTimer();
+          else {
+            minutes = parseInt(document.getElementById('breakTime').value);
+            seconds = 0;
+            updateTimer(minutes, seconds);
+          }
+        } else {
+          minutes--;
+          seconds = 59;
+        }
+      } else {
+        seconds--;
+      }
+      updateTimer(minutes, seconds);
+    }, 1000);
+  }
+
+  function updateTimer(min, sec) {
+    document.getElementById('timer').textContent = ${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')};
+  }function changeTheme(theme) {
     const video = document.getElementById("background-video");
     const sources = {
       galaxy: "https://cdn.pixabay.com/video/2016/03/21/551-160761405_large.mp4",
