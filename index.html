@@ -1,202 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Stargazer's Study Hall</title>
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      font-family: 'Segoe UI', sans-serif;
-      color: white;
-      text-align: center;
-    }
-
-    #background-video {
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      min-width: 100%;
-      min-height: 100%;
-      z-index: -1;
-      object-fit: cover;
-    }
-
-    .container {
-      position: relative;
-      z-index: 2;
-      padding: 20px;
-      background-color: rgba(0, 0, 0, 0.5);
-      height: 100vh;
-      overflow-y: auto;
-    }
-
-    h1 {
-      color: navy;
-      font-size: 3rem;
-    }
-
-    #timer {
-      font-size: 7rem;
-      margin: 30px 0;
-    }
-
-    input, select, button {
-      padding: 10px;
-      margin: 10px;
-      font-size: 1.1rem;
-      border-radius: 10px;
-      border: none;
-    }
-
-    #quote {
-      margin: 20px;
-      font-style: italic;
-      font-size: 1.5rem;
-    }
-
-    iframe {
-      width: 300px;
-      height: 150px;
-      border: none;
-      margin-top: 20px;
-    }
-
-    audio {
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
-
-<video autoplay muted loop id="background-video">
-  <source src="https://cdn.pixabay.com/video/2016/03/21/551-160761405_large.mp4" type="video/mp4">
-</video>
-
-<div class="container">
-  <h1>STARGAZER'S STUDY HALL</h1>
-  <div id="quote">“Stay focused and never give up.”</div>
-
-  <label>Set Study Time (minutes):</label>
-  <input type="number" id="studyTime" value="25" />
-
-  <label>Set Break Time (minutes):</label>
-  <input type="number" id="breakTime" value="5" />
-  <br>
-
-  <button onclick="startTimer()">Start</button>
-
-  <div id="timer">25:00</div>
-
-  <label>Choose Theme:</label>
-  <select onchange="changeTheme(this.value)">
-    <option value="galaxy">Galaxy</option>
-    <option value="anime">Anime</option>
-    <option value="nature">Nature</option>
-    <option value="scifi">Sci-Fi</option>
-    <option value="library">Library</option>
-  </select>
-
-  <div>
-    <h3>Play Music</h3>
-    <input type="text" id="youtubeUrl" placeholder="Paste YouTube URL" />
-    <button onclick="playYouTube()">Play</button>
-    <br><br>
-    <label>Or Upload MP3: </label>
-    <input type="file" accept="audio/*" onchange="playLocalAudio(this)" />
-    <audio id="localAudio" controls></audio>
-    <br><br>
-    <div id="ytPlayer"></div>
-  </div>
-</div>
-
-<script>
-  let timer;
-  let isStudy = true;
-  let quoteIndex = 0;
-  const quotes = [
-    "Push yourself, because no one else is going to do it for you.",
-    "You are capable of amazing things.",
-    "Small steps every day lead to big results.",
-    "Your only limit is your mind.",
-    "Don’t stop until you’re proud.",
-    "Success is what comes after you stop making excuses.",
-    "You were born to do this!"
-  ];
-
-  function startTimer() {
-    clearInterval(timer);
-    let minutes = parseInt(document.getElementById('studyTime').value);
-    let seconds = 0;
-    updateTimer(minutes, seconds);
-
-    timer = setInterval(() => {
-      if (seconds === 0) {
-        if (minutes === 0) {
-          clearInterval(timer);
-          new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play();
-          alert("Congrats! You did it!\n“Discipline is the bridge between goals and accomplishment.”");
-          isStudy = !isStudy;
-          if (isStudy) startTimer();
-          else {
-            minutes = parseInt(document.getElementById('breakTime').value);
-            seconds = 0;
-            updateTimer(minutes, seconds);
-          }
-        } else {
-          minutes--;
-          seconds = 59;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STARGAZER's STUDY HALL</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            transition: background-color 0.5s, color 0.5s;
+            overflow: hidden;
+            background-color: #f0f0f0;
         }
-      } else {
-        seconds--;
-      }
-      updateTimer(minutes, seconds);
-    }, 1000);
-  }
+        #video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .header {
+            color: navy;
+            font-size: 3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .header img {
+            width: 50px;
+            height: 50px;
+        }
+        #quote {
+            font-style: italic;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #timer {
+            font-size: 5em;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .controls, .themes, .music, .modes {
+            margin: 20px 0;
+        }
+        input, select, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .music iframe {
+            margin-top: 10px;
+        }
+        .dark {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+        .dark #quote {
+            background: rgba(44, 62, 80, 0.7);
+        }
+        .light {
+            background-color: #f0f0f0;
+            color: #2c3e50;
+        }
+        .light #quote {
+            background: rgba(255, 255, 255, 0.7);
+        }
+        .gray {
+            background-color: #7f8c8d;
+            color: #ecf0f1;
+        }
+        .gray #quote {
+            background: rgba(127, 140, 141, 0.7);
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #27ae60;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="light">
+    <video id="video-bg" autoplay muted loop>
+        <source src="https://player.vimeo.com/external/458664084.sd.mp4?s=5e7f1f8f4e8d4d2b2f4b6f8d2d3e4f5e6d2c4b8f&profile_id=164" type="video/mp4">
+    </video>
+    <div class="container">
+        <div class="header">
+            <img src="https://img.icons8.com/color/48/000000/galaxy.png" alt="Galaxy Logo">
+            STARGAZER's STUDY HALL
+        </div>
+        <div id="quote">“The future belongs to those who believe in the beauty of their dreams.”</div>
+        <div class="controls">
+            <label>Work Time (min):</label>
+            <input type="number" id="work-time" value="25" min="1">
+            <label>Break Time (min):</label>
+            <input type="number" id="break-time" value="5" min="1">
+            <button onclick="startTimer()">Start</button>
+            <button onclick="resetTimer()">Reset</button>
+        </div>
+        <div id="timer">25:00</div>
+        <div class="themes">
+            <label>Choose Theme:</label>
+            <select id="theme" onchange="changeTheme()">
+                <option value="lofi">LOFI</option>
+                <option value="scifi">SCI-FI</option>
+                <option value="anime">ANIME</option>
+                <option value="galaxy">GALAXY</option>
+                <option value="sky">SKY</option>
+                <option value="mountain">MOUNTAIN</option>
+                <option value="beach">BEACH</option>
+                <option value="library">LIBRARY</option>
+                <option value="roads">ROADS</option>
+                <option value="traffic">TRAFFIC</option>
+                <option value="exam">EXAM</option>
+            </select>
+        </div>
+        <div class="modes">
+            <label>Mode:</label>
+            <select id="mode" onchange="changeMode()">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="gray">Gray</option>
+            </select>
+        </div>
+        <div class="music">
+            <h3>Listen to Music</h3>
+            <label>YouTube Link:</label>
+            <input type="text" id="youtube-link" placeholder="Enter YouTube video URL">
+            <button onclick="playYouTube()">Play YouTube</button>
+            <div id="youtube-player"></div>
+            <label>Upload Local Music:</label>
+            <input type="file" id="local-music" accept="audio/*">
+            <button onclick="playLocal()">Play Local</button>
+            <audio id="local-player" controls style="display:none;"></audio>
+        </div>
+        <div class="popup" id="popup">
+            <h2>Congrats, You Did It!</h2>
+            <p>“Success is not the absence of obstacles, but the courage to push through them.”</p>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    </div>
+    <audio id="alarm" src="https://www.soundjay.com/buttons/beep-01a.mp3"></audio>
+    <script>
+        let timerInterval;
+        let isWork = true;
+        let timeLeft;
+        let quotes = [
+            “The future belongs to those who believe in the beauty of their dreams.”,
+            “Small steps every day lead to big results.”,
+            “Focus on the process, not the outcome.”,
+            “Your only limit is your mind.”,
+            “Keep going; you’re closer than you think.”,
+            “Effort today, rewards tomorrow.”,
+            “Stay curious, keep learning.”
+        ];
+        let currentQuoteIndex = 0;
 
-  function updateTimer(min, sec) {
-    document.getElementById('timer').textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-  }
+        const themes = {
+            lofi: { video: 'https://player.vimeo.com/external/458664084.sd.mp4?s=5e7f1f8f4e8d4d2b2f4b6f8d2d3e4f5e6d2c4b8f&profile_id=164', color: '#8e44ad', font: 'Comic Sans MS' },
+            scifi: { video: 'https://player.vimeo.com/external/457598151.sd.mp4?s=3e4f5e6d7c8b9a0c1d2e3f4g5h6i7j8k&profile_id=164', color: '#2ecc71', font: 'Orbitron' },
+            anime: { video: 'https://player.vimeo.com/external/460123456.sd.mp4?s=7i8j9k0l1m2n3o4p5q6r7s8t9u0v&profile_id=164', color: '#e74c3c', font: 'Anime Ace' },
+            galaxy: { video: 'https://player.vimeo.com/external/459876543.sd.mp4?s=2a3b4c5d6e7f8g9h0i1j2k3l4m5n&profile_id=164', color: '#9b59b6', font: 'Verdana' },
+            sky: { video: 'https://player.vimeo.com/external/461234567.sd.mp4?s=3o4p5q6r7s8t9u0v1w2x3y4z5a6b&profile_id=164', color: '#3498db', font: 'Arial' },
+            mountain: { video: 'https://player.vimeo.com/external/462345678.sd.mp4?s=4c5d6e7f8g9h0i1j2k3l4m5n6o7p&profile_id=164', color: '#f1c40f', font: 'Georgia' },
+            beach: { video: 'https://player.vimeo.com/external/463456789.sd.mp4?s=5e6f7g8h9i0j1k2l3m4n5o6p7q8r&profile_id=164', color: '#1abc9c', font: 'Times New Roman' },
+            library: { video: 'https://player.vimeo.com/external/464567890.sd.mp4?s=6f7g8h9i0j1k2l3m4n5o6p7q8r9s&profile_id=164', color: '#d35400', font: 'Bookman' },
+            roads: { video: 'https://player.vimeo.com/external/465678901.sd.mp4?s=7g8h9i0j1k2l3m4n5o6p7q8r9s0t&profile_id=164', color: '#34495e', font: 'Helvetica' },
+            traffic: { video: 'https://player.vimeo.com/external/466789012.sd.mp4?s=8h9i0j1k2l3m4n5o6p7q8r9s0t1u&profile_id=164', color: '#c0392b', font: 'Impact' },
+            exam: { video: 'https://player.vimeo.com/external/467890123.sd.mp4?s=9i0j1k2l3m4n5o6p7q8r9s0t1u2v&profile_id=164', color: '#7f8c8d', font: 'Courier New' }
+        };
 
-  function changeTheme(theme) {
-    const video = document.getElementById("background-video");
-    const sources = {
-      galaxy: "https://cdn.pixabay.com/video/2016/03/21/551-160761405_large.mp4",
-      anime: "https://cdn.pixabay.com/video/2023/03/12/155365-810118209_large.mp4",
-      nature: "https://cdn.pixabay.com/video/2019/07/19/25632-356930035_large.mp4",
-      scifi: "https://cdn.pixabay.com/video/2022/12/11/143878-783760054_large.mp4",
-      library: "https://cdn.pixabay.com/video/2021/09/12/88391-617546120_large.mp4"
-    };
-    video.src = sources[theme];
-    video.load();
-    video.play();
-  }
+        function startTimer() {
+            clearInterval(timerInterval);
+            const workTime = parseInt(document.getElementById('work-time').value) * 60;
+            const breakTime = parseInt(document.getElementById('break-time').value) * 60;
+            timeLeft = isWork ? workTime : breakTime;
+            updateTimer();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('alarm').play();
+                    if (isWork) {
+                        showPopup();
+                    }
+                    isWork = !isWork;
+                    startTimer();
+                }
+            }, 1000);
+        }
 
-  function playYouTube() {
-    const url = document.getElementById("youtubeUrl").value;
-    const ytPlayer = document.getElementById("ytPlayer");
-    const videoId = url.split("v=")[1]?.split("&")[0];
-    if (videoId) {
-      ytPlayer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay"></iframe>`;
-    } else {
-      ytPlayer.innerHTML = "Invalid URL";
-    }
-  }
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
 
-  function playLocalAudio(input) {
-    const file = input.files[0];
-    const audio = document.getElementById("localAudio");
-    audio.src = URL.createObjectURL(file);
-    audio.play();
-  }
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isWork = true;
+            timeLeft = parseInt(document.getElementById('work-time').value) * 60;
+            updateTimer();
+        }
 
-  setInterval(() => {
-    quoteIndex = (quoteIndex + 1) % quotes.length;
-    document.getElementById("quote").textContent = quotes[quoteIndex];
-  }, 300000); // every 5 min
-</script>
+        function changeTheme() {
+            const theme = document.getElementById('theme').value;
+            const video = document.getElementById('video-bg');
+            video.src = themes[theme].video;
+            document.getElementById('timer').style.color = themes[theme].color;
+            document.getElementById('timer').style.fontFamily = themes[theme].font;
+            video.load();
+            video.play();
+        }
 
+        function changeMode() {
+            const mode = document.getElementById('mode').value;
+            document.body.className = mode;
+        }
+
+        function playYouTube() {
+            const link = document.getElementById('youtube-link').value;
+            const videoId = link.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/)?.[1] ||
+                           link.match(/(?:https?:\/\/)?youtu\.be\/([^?]+)/)?.[1];
+            if (videoId) {
+                document.getElementById('youtube-player').innerHTML = `
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+            }
+        }
+
+        function playLocal() {
+            const file = document.getElementById('local-music').files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                const audio = document.getElementById('local-player');
+                audio.src = url;
+                audio.style.display = 'block';
+                audio.play();
+            }
+        }
+
+        function showPopup() {
+            const popup = document.getElementById('popup');
+            popup.style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        function updateQuote() {
+            currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+            document.getElementById('quote').textContent = quotes[currentQuoteIndex];
+        }
+
+        setInterval(updateQuote, 5 * 60 * 1000);
+        changeTheme();
+    </script>
 </body>
 </html>
